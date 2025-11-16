@@ -1,0 +1,159 @@
+eureka:
+    client:
+        fetch-registry: true
+        register-with-eureka: true
+        serviceUrl:
+            defaultZone: http://localhost:8761/eureka/
+    instance:
+        hostname: localhost
+        lease-renewal-interval-in-seconds: 30
+        prefer-ip-address: true
+
+logging:
+    level:
+        com:
+            merigaumata:
+                apigateway: DEBUG
+        org:
+            springframework:
+                cloud:
+                    gateway: DEBUG
+                    loadbalancer: DEBUG
+                security: INFO
+        reactor:
+            netty: INFO
+        root: INFO
+    pattern:
+        console: '%d{yyyy-MM-dd HH:mm:ss} - %msg%n'
+        file: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
+management:
+    endpoint:
+        health:
+            show-details: always
+    endpoints:
+        web:
+            exposure:
+                include: health,info,prometheus,metrics,circuitbreakers,gateway
+    health:
+        circuitbreakers:
+            enabled: true
+    metrics:
+        distribution:
+            percentiles-histogram:
+                http:
+                    server:
+                        requests: true
+    prometheus:
+        metrics:
+            export:
+                enabled: true
+    tracing:
+        sampling:
+            probability: 1.0
+    zipkin:
+        tracing:
+            endpoint: http://localhost:9411/api/v2/spans
+resilience4j:
+    circuitbreaker:
+        instances:
+            authServiceCircuitBreaker:
+                automaticTransitionFromOpenToHalfOpenEnabled: true
+                failureRateThreshold: 50
+                minimumNumberOfCalls: 5
+                permittedNumberOfCallsInHalfOpenState: 3
+                registerHealthIndicator: true
+                slidingWindowSize: 10
+                waitDurationInOpenState: 5s
+            userServiceCircuitBreaker:
+                automaticTransitionFromOpenToHalfOpenEnabled: true
+                eventConsumerBufferSize: 10
+                failureRateThreshold: 50
+                minimumNumberOfCalls: 5
+                permittedNumberOfCallsInHalfOpenState: 3
+                registerHealthIndicator: true
+                slidingWindowSize: 10
+                waitDurationInOpenState: 5s
+    timelimiter:
+        instances:
+            authServiceCircuitBreaker:
+                timeoutDuration: 3s
+            userServiceCircuitBreaker:
+                timeoutDuration: 3s
+server:
+    port: 8080
+
+
+spring:
+    application:
+        name: API-GATEWAY
+    security:
+        oauth2:
+            resourceserver:
+                jwt:
+                    jwk-set-uri: http://localhost:9000/.well-known/jwks.json
+                opaque:
+                    introspection-uri: http://localhost:9000/oauth2/introspect
+                    client-id: client
+                    client-secret: secret
+    cloud:
+        gateway:
+            httpserver:
+                wiretap: false
+            forwarded:
+                enabled: false
+            default-filters:
+            - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+#            -   args:
+#                    redis-rate-limiter:
+#                        burstCapacity: 20
+#                        replenishRate: 10
+#                        requestedTokens: 1
+#                name: RequestRateLimiter
+            discovery:
+                locator:
+                    enabled: true
+                    lower-case-service-id: true
+            globalcors:
+                corsConfigurations:
+                    '[/**]':
+                        allowCredentials: true
+                        allowedHeaders: '*'
+                        allowedMethods:
+                        - GET
+                        - POST
+                        - PUT
+                        - DELETE
+                        - OPTIONS
+                        allowedOrigins:
+                        - http://localhost:3000
+                        - http://localhost:4200
+                        maxAge: 3600
+            routes:
+            -   filters:
+                - StripPrefix=1
+                -   args:
+                        fallbackUri: forward:/fallback/auth
+                        name: authServiceCircuitBreaker
+                    name: CircuitBreaker
+#                -   args:
+#                      redis-rate-limiter.replenishRate: 5
+#                      redis-rate-limiter.burstCapacity: 10
+#                      redis-rate-limiter.requestedTokens: 1
+#                    name: RequestRateLimiter
+                -   args:
+                        retries: 3
+                    name: Retry
+                id: auth-service
+                predicates:
+                - Path=/api/auth/**
+                uri: lb://AUTH-SERVICE
+    data:
+        redis:
+            host: localhost
+            port: 6379
+            timeout: 60000
+
+jwt:
+  jwks-uri: http://localhost:8081/.well-known/jwks.json
+  issuer: auth-service
+  audience: api-gateway

@@ -1,0 +1,103 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::               (v3.2.10)
+
+2025-11-16 19:22:08 - Starting ApiGatewayApplication v1.0.0 using Java 25 with PID 14581 (/Users/ayush/Developer/Personal-Projects/ecommerce-backend/API-GATEWAY/target/API-GATEWAY-1.0.0.jar started by ayush in /Users/ayush/Developer/Personal-Projects/ecommerce-backend/API-GATEWAY)
+2025-11-16 19:22:08 - Running with Spring Boot v3.2.10, Spring v6.1.13
+2025-11-16 19:22:08 - No active profile set, falling back to 1 default profile: "default"
+2025-11-16 19:22:12 - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-11-16 19:22:12 - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-11-16 19:22:12 - Finished Spring Data repository scanning in 45 ms. Found 0 Redis repository interfaces.
+2025-11-16 19:22:13 - BeanFactory id=1a971e59-bcfc-3a5c-9b61-138dff0bf3c2
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::allocateMemory has been called by io.netty.util.internal.PlatformDependent0$2 (jar:nested:/Users/ayush/Developer/Personal-Projects/ecommerce-backend/API-GATEWAY/target/API-GATEWAY-1.0.0.jar/!BOOT-INF/lib/netty-common-4.1.113.Final.jar!/)
+WARNING: Please consider reporting this to the maintainers of class io.netty.util.internal.PlatformDependent0$2
+WARNING: sun.misc.Unsafe::allocateMemory will be removed in a future release
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::loadLibrary has been called by io.netty.util.internal.NativeLibraryUtil in an unnamed module (jar:nested:/Users/ayush/Developer/Personal-Projects/ecommerce-backend/API-GATEWAY/target/API-GATEWAY-1.0.0.jar/!BOOT-INF/lib/netty-common-4.1.113.Final.jar!/)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+2025-11-16 19:22:14 - Unable to load io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider, fallback to system defaults. This may result in incorrect DNS resolutions on MacOS. Check whether you have a dependency on 'io.netty:netty-resolver-dns-native-macos'. Use DEBUG level to see the full stack: java.lang.UnsatisfiedLinkError: failed to load the required native library
+2025-11-16 19:22:14 - Routes supplied from Gateway Properties: [RouteDefinition{id='auth-service', predicates=[PredicateDefinition{name='Path', args={_genkey_0=/api/auth/**}}], filters=[FilterDefinition{name='StripPrefix', args={_genkey_0=1}}, FilterDefinition{name='CircuitBreaker', args={fallbackUri=forward:/fallback/auth, name=authServiceCircuitBreaker}}, FilterDefinition{name='Retry', args={retries=3}}], uri=lb://AUTH-SERVICE, order=0, metadata={}}]
+2025-11-16 19:22:14 - Loaded RoutePredicateFactory [After]
+2025-11-16 19:22:14 - Loaded RoutePredicateFactory [Before]
+2025-11-16 19:22:14 - Loaded RoutePredicateFactory [Between]
+2025-11-16 19:22:14 - Loaded RoutePredicateFactory [Cookie]
+2025-11-16 19:22:14 - Loaded RoutePredicateFactory [Header]
+2025-11-16 19:22:14 - Loaded RoutePredicateFactory [Host]
+2025-11-16 19:22:14 - Loaded RoutePredicateFactory [Method]
+2025-11-16 19:22:14 - Loaded RoutePredicateFactory [Path]
+2025-11-16 19:22:14 - Loaded RoutePredicateFactory [Query]
+2025-11-16 19:22:14 - Loaded RoutePredicateFactory [ReadBody]
+2025-11-16 19:22:14 - Loaded RoutePredicateFactory [RemoteAddr]
+2025-11-16 19:22:14 - Loaded RoutePredicateFactory [XForwardedRemoteAddr]
+2025-11-16 19:22:14 - Loaded RoutePredicateFactory [Weight]
+2025-11-16 19:22:14 - Loaded RoutePredicateFactory [CloudFoundryRouteService]
+2025-11-16 19:22:14 - Exposing 5 endpoint(s) beneath base path '/actuator'
+2025-11-16 19:22:15 - Eureka HTTP Client uses RestTemplate.
+2025-11-16 19:22:15 - Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2025-11-16 19:22:15 - Setting initial instance status as: STARTING
+2025-11-16 19:22:15 - Initializing Eureka in region us-east-1
+2025-11-16 19:22:15 - Resolving eureka endpoints via configuration
+2025-11-16 19:22:15 - Disable delta property : false
+2025-11-16 19:22:15 - Single vip registry refresh property : null
+2025-11-16 19:22:15 - Force full registry fetch : false
+2025-11-16 19:22:15 - Application is null : false
+2025-11-16 19:22:15 - Registered Applications size is zero : true
+2025-11-16 19:22:15 - Application version is -1: true
+2025-11-16 19:22:15 - Getting all instance registry info from the eureka server
+2025-11-16 19:22:15 - The response status is 200
+2025-11-16 19:22:15 - Starting heartbeat executor: renew interval is: 30
+2025-11-16 19:22:15 - InstanceInfoReplicator onDemand update allowed rate per min is 4
+2025-11-16 19:22:15 - Discovery Client initialized at timestamp 1763301135572 with initial instances count: 2
+2025-11-16 19:22:15 - Registering application API-GATEWAY with eureka with status UP
+2025-11-16 19:22:15 - Saw local status change event StatusChangeEvent [timestamp=1763301135574, current=UP, previous=STARTING]
+2025-11-16 19:22:15 - DiscoveryClient_API-GATEWAY/192.168.1.3:API-GATEWAY:8080: registering service...
+2025-11-16 19:22:15 - RouteDefinition ReactiveCompositeDiscoveryClient_API-GATEWAY applying {pattern=/api-gateway/**} to Path
+2025-11-16 19:22:15 - RouteDefinition ReactiveCompositeDiscoveryClient_API-GATEWAY applying filter {_genkey_0=Access-Control-Allow-Credentials Access-Control-Allow-Origin} to DedupeResponseHeader
+2025-11-16 19:22:15 - RouteDefinition ReactiveCompositeDiscoveryClient_API-GATEWAY applying filter {regexp=/api-gateway/?(?<remaining>.*), replacement=/${remaining}} to RewritePath
+2025-11-16 19:22:15 - RouteDefinition matched: ReactiveCompositeDiscoveryClient_API-GATEWAY
+2025-11-16 19:22:15 - RouteDefinition ReactiveCompositeDiscoveryClient_AUTH-SERVICE applying {pattern=/auth-service/**} to Path
+2025-11-16 19:22:15 - RouteDefinition ReactiveCompositeDiscoveryClient_AUTH-SERVICE applying filter {_genkey_0=Access-Control-Allow-Credentials Access-Control-Allow-Origin} to DedupeResponseHeader
+2025-11-16 19:22:15 - RouteDefinition ReactiveCompositeDiscoveryClient_AUTH-SERVICE applying filter {regexp=/auth-service/?(?<remaining>.*), replacement=/${remaining}} to RewritePath
+2025-11-16 19:22:15 - RouteDefinition matched: ReactiveCompositeDiscoveryClient_AUTH-SERVICE
+2025-11-16 19:22:15 - RouteDefinition auth-service applying {_genkey_0=/api/auth/**} to Path
+2025-11-16 19:22:15 - RouteDefinition auth-service applying filter {_genkey_0=Access-Control-Allow-Credentials Access-Control-Allow-Origin} to DedupeResponseHeader
+2025-11-16 19:22:15 - RouteDefinition auth-service applying filter {_genkey_0=1} to StripPrefix
+2025-11-16 19:22:15 - RouteDefinition auth-service applying filter {fallbackUri=forward:/fallback/auth, name=authServiceCircuitBreaker} to CircuitBreaker
+2025-11-16 19:22:15 - RouteDefinition auth-service applying filter {retries=3} to Retry
+2025-11-16 19:22:15 - RouteDefinition matched: auth-service
+2025-11-16 19:22:15 - New routes count: 3
+2025-11-16 19:22:15 - DiscoveryClient_API-GATEWAY/192.168.1.3:API-GATEWAY:8080 - registration status: 204
+2025-11-16 19:22:17 - Unregistering application API-GATEWAY with eureka with status DOWN
+2025-11-16 19:22:17 - Saw local status change event StatusChangeEvent [timestamp=1763301137784, current=DOWN, previous=UP]
+2025-11-16 19:22:17 - DiscoveryClient_API-GATEWAY/192.168.1.3:API-GATEWAY:8080: registering service...
+2025-11-16 19:22:17 - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2025-11-16 19:22:17 - DiscoveryClient_API-GATEWAY/192.168.1.3:API-GATEWAY:8080 - registration status: 204
+2025-11-16 19:22:18 - Shutting down DiscoveryClient ...
+2025-11-16 19:22:21 - Unregistering ...
+2025-11-16 19:22:21 - DiscoveryClient_API-GATEWAY/192.168.1.3:API-GATEWAY:8080 - deregister  status: 200
+2025-11-16 19:22:21 - Completed shut down of DiscoveryClient
+2025-11-16 19:22:21 - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-11-16 19:22:21 - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
