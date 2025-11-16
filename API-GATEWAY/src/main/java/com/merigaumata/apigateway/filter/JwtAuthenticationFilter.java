@@ -34,6 +34,7 @@ public class JwtAuthenticationFilter implements WebFilter {
 
     private static final List<String> WHITELIST_PATTERNS = Arrays.asList(
             "/api/auth/login",
+            "/api/auth/register",
             "/oauth2/**",
             "/.well-known/**",
             "/actuator/health",

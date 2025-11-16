@@ -97,56 +97,53 @@ spring:
                     client-secret: secret
     cloud:
         gateway:
-            httpserver:
-                wiretap: false
-            forwarded:
-                enabled: false
-            default-filters:
-            - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
-#            -   args:
+            server:
+                webflux:
+                  httpserver:
+                        wiretap: false
+                  forwarded:
+                        enabled: false
+                  discovery:
+                        locator:
+                            enabled: true
+                            lower-case-service-id: true
+                  globalcors:
+                        cors-configurations:
+                            '[/**]':
+                                allowCredentials: true
+                                allowedHeaders: '*'
+                                allowedMethods:
+                                - GET
+                                - POST
+                                - PUT
+                                - DELETE
+                                - OPTIONS
+                                allowedOrigins:
+                                - http://localhost:3000
+                                - http://localhost:4200
+                                maxAge: 3600
+                  default-filters:
+                    - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+                  routes:
+                    - id: auth-service
+                      uri: lb://AUTH-SERVICE
+                      predicates:
+                        - Path=/api/auth/**
+                      filters:
+                        - StripPrefix=1
+                        - name: CircuitBreaker
+                          args:
+                            name: authServiceCircuitBreaker
+                            fallbackUri: forward:/fallback/auth
+                        - name: Retry
+                          args:
+                            retries: 3
+          #            -   args:
 #                    redis-rate-limiter:
 #                        burstCapacity: 20
 #                        replenishRate: 10
 #                        requestedTokens: 1
 #                name: RequestRateLimiter
-            discovery:
-                locator:
-                    enabled: true
-                    lower-case-service-id: true
-            globalcors:
-                corsConfigurations:
-                    '[/**]':
-                        allowCredentials: true
-                        allowedHeaders: '*'
-                        allowedMethods:
-                        - GET
-                        - POST
-                        - PUT
-                        - DELETE
-                        - OPTIONS
-                        allowedOrigins:
-                        - http://localhost:3000
-                        - http://localhost:4200
-                        maxAge: 3600
-            routes:
-            -   filters:
-                - StripPrefix=1
-                -   args:
-                        fallbackUri: forward:/fallback/auth
-                        name: authServiceCircuitBreaker
-                    name: CircuitBreaker
-#                -   args:
-#                      redis-rate-limiter.replenishRate: 5
-#                      redis-rate-limiter.burstCapacity: 10
-#                      redis-rate-limiter.requestedTokens: 1
-#                    name: RequestRateLimiter
-                -   args:
-                        retries: 3
-                    name: Retry
-                id: auth-service
-                predicates:
-                - Path=/api/auth/**
-                uri: lb://AUTH-SERVICE
     data:
         redis:
             host: localhost

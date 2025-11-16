@@ -6,7 +6,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <!-- Compatible with Spring Cloud 2023.0.5 -->
-        <version>3.3.4</version>
+        <version>3.5.0</version>
         <relativePath/>
     </parent>
     <groupId>com.merigaumata</groupId>
@@ -16,7 +16,7 @@
     <description>API-GATEWAY</description>
     <properties>
         <java.version>17</java.version>
-        <spring-cloud.version>2023.0.5</spring-cloud.version>
+        <spring-cloud.version>2025.0.0</spring-cloud.version>
         <lombok.version>1.18.38</lombok.version>
     </properties>
     <dependencies>
