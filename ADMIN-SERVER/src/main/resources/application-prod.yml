@@ -1,0 +1,89 @@
+# Production Profile
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: ${JDBC_DATABASE_URL}
+    username: ${JDBC_DATABASE_USERNAME}
+    password: ${JDBC_DATABASE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  boot:
+    admin:
+      monitor:
+        status-interval: 15000
+      # Notification configuration
+      notify:
+        mail:
+          enabled: true
+
+  # Mail Configuration for Notifications (Production)
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD} #app password
+    protocol: smtp
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+eureka:
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME}
+    metadata-map:
+      user.name: ${ADMIN_USER}
+      password: ${ADMIN_PASS}
+    prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,loggers,threaddump
+  endpoint:
+    health:
+      show-details: when_authorized
+      roles: ADMIN
+      probes:
+        enabled: true
+    shutdown:
+      access: none
+  info:
+    env:
+      enabled: false
+
+logging:
+  level:
+    root: INFO
+    com.mergaumata: INFO
+    de.codecentric.boot.admin: INFO
+    org.springframework.cloud: INFO
+    org.springframework.security: INFO
+  file:
+    name: # remove or leave empty to not create local log files
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+server:
+  tomcat:
+    threads:
+      max: 500
+
+
+
+# User credentials - these MUST be set as environment variables in production or via a secrets manager
+ADMIN_USER: ${ADMIN_USER}
+ADMIN_PASS: ${ADMIN_PASS}
+USER_USER: ${USER_USER}
+USER_PASS: ${USER_PASS}

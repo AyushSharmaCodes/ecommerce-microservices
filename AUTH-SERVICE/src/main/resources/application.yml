@@ -1,11 +1,15 @@
 spring:
   application:
     name: AUTH-SERVICE
+  #  boot:
+  #    admin:
+  #      client:
+  #        url: http://localhost:1111/
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/defaultdb}
-    username: ${SPRING_DATASOURCE_USERNAME:REPLACE_ME}
-    password: ${SPRING_DATASOURCE_PASSWORD:REPLACE_ME}
+    url: jdbc:postgresql://pg-200cbd45-ecom-proton.k.aivencloud.com:25379/defaultdb
+    username: avnadmin
+    password: AVNS_-51S2o3mdFuUT_Ro8DY
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -18,8 +22,6 @@ spring:
 
 server:
   port: 8081
-  servlet:
-    context-path: /auth
 
 eureka:
   client:
@@ -73,3 +75,10 @@ management:
   zipkin:
     tracing:
       endpoint: http://localhost:9411/api/v2/spans
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html

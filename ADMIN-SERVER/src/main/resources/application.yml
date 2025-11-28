@@ -1,0 +1,117 @@
+# Server Configuration
+server:
+  port: 1111
+  servlet:
+    context-path: /
+  compression:
+    enabled: true
+  tomcat:
+    threads:
+      max: 200
+      min-spare: 10
+
+spring:
+  application:
+    name: admin-server
+
+  profiles:
+    active: dev
+
+  jackson:
+    serialization:
+      INDENT_OUTPUT: true
+
+  # Boot Admin Server Configuration
+  boot:
+    admin:
+      ui:
+        title: Monitoring Dashboard
+        brand: <img src="assets/img/icon-spring-boot-admin.svg"><span>Admin Server</span>
+        favicon: assets/img/favicon.png
+        favicon-danger: assets/img/favicon-danger.png
+
+      # Instance metadata
+      metadata-keys-to-sanitize: >
+        (?i).*password.*,
+        (?i).*passwd.*,
+        (?i).*secret.*,
+        (?i).*client-secret.*,
+        (?i).*private.*,
+        (?i).*key.*,
+        (?i).*token.*,
+        (?i).*credential.*,
+        (?i).*authorization.*
+
+      # Probed endpoints
+      probed-endpoints: health,env,metrics,httpexchanges,threaddump,jolokia,info,logfile,refresh,flyway,liquibase,heapdump,loggers
+
+      # Discovery configuration
+      discovery:
+        enabled: true
+        ignored-services: admin-server
+
+# Eureka Client Configuration
+eureka:
+  client:
+    registryFetchIntervalSeconds: 5
+    serviceUrl:
+      defaultZone: http://service:service123@localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+    enabled: true
+    healthcheck:
+      enabled: true
+  instance:
+    leaseRenewalIntervalInSeconds: 10
+    leaseExpirationDurationInSeconds: 30
+    metadata-map:
+      management:
+        context-path: ${server.servlet.context-path}/actuator
+    health-check-url-path: ${server.servlet.context-path}/actuator/health
+    status-page-url-path: ${server.servlet.context-path}/actuator/info
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+  info:
+    java:
+      enabled: true
+    os:
+      enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    com.mergaumata: DEBUG
+    de.codecentric.boot.admin: INFO
+    org.springframework.cloud: INFO
+    org.springframework.security: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Info endpoint configuration
+info:
+  app:
+    name: ${spring.application.name}
+    description: Spring Boot Admin Server
+    version: 1.0.0
+    encoding: @project.build.sourceEncoding@
+    java:
+      version: @java.version@

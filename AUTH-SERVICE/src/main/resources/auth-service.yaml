@@ -1,0 +1,118 @@
+openapi: 3.0.3
+
+info:
+  title: Auth Service
+  version: 1.0.0
+  description: API documentation for Authentication microservice
+
+paths:
+  /login:
+    post:
+      tags:
+        - Authentication
+      summary: User Login
+      description: Authenticate the user and generate access and refresh tokens
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Invalid Credentials
+        '500':
+          description: Internal server error
+
+  /refresh:
+    get:
+      tags:
+        - Authentication
+      summary: Refresh access Token
+      description: Accepts a refresh token and returns a new access token
+      operationId: refresh
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequest'
+      responses:
+        '200':
+          description: Token refreshed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid or expired refresh token
+        '500':
+          description: Internal server error
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: User Logout
+      description: Invalidate the provided access and refresh tokens
+      operationId: logout
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+            example: Bearer {token}
+          description: Access token in the format 'Bearer {token}'
+      responses:
+        '200':
+          description: Logged out successfully
+        '400':
+          description: Invalid or missing token
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          example: john_doe
+        password:
+          type: string
+          example: securePassword123
+    LoginResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        refreshToken:
+          type: string
+          example: dGhpcy1pcz1hLXJlZnJlc2gtdG9rZW4uLi4=
+        tokenType:
+          type: string
+          example: Bearer
+        expiresIn:
+          type: integer
+          example: 3600
+          description: Access token expiration time in seconds
+    RefreshTokenRequest:
+      type: object
+      required:
+        - refreshToken
+      properties:
+        refreshToken:
+          type: string
+          example: dGhpcy1pcz1hLXJlZnJlc2gtdG9rZW4uLi4=

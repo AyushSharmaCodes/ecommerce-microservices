@@ -1,0 +1,71 @@
+server:
+  port: ${SERVER_PORT:8761} # Sets the HTTP port for the application, defaulting to standard Eureka port 8761
+
+spring:
+  config:
+    activate:
+      on-profile: prod # Ensures this specific configuration block only loads when the active profile is 'prod'
+    import: "vault://" # Instructs Spring Boot to import external configuration properties from HashiCorp Vault
+  cloud:
+    vault:
+      uri: ${VAULT_ADDR:http://localhost:8200} # The URL address of your HashiCorp Vault server
+      #token: ${VAULT_TOKEN} # The auth token (commented out as we are using AppRole authentication below)
+      scheme: https # The protocol used to connect to Vault (should be https in real production)
+      fail-fast: false # Allows the application to start up even if it cannot connect to Vault immediately
+      kv:
+        enabled: true # Enables the Key-Value backend secret engine
+        backend: secret # Specifies the mount path of the KV secret engine in Vault
+        default-context: ${spring.application.name:application} # The default path/name within Vault to look for secrets (e.g., secret/service-registry)
+        #profile-separator: '/' # Defines the separator used between application name and profile in Vault paths
+      authentication: APPROLE # specific authentication method designed for machine-to-machine login
+      app-role:
+        role-id: ${VAULT_ROLE_ID} # The Role ID (acting as the username) for Vault AppRole authentication
+        secret-id: ${VAULT_SECRET_ID} # The Secret ID (acting as the password) for Vault AppRole authentication
+        role: service-registry-role # The specific named role configured inside Vault to validate against
+  datasource:
+    url: ${SPRING_DATASOURCE_URL} # The JDBC URL for connecting to the PostgreSQL database
+    username: ${SPRING_DATASOURCE_USERNAME} # The database user's username
+    password: ${SPRING_DATASOURCE_PASSWORD} # The database user's password
+    driver-class-name: org.postgresql.Driver # The fully qualified class name of the JDBC driver to use
+    hikari:
+      maximum-pool-size: 10 # The maximum number of active connections allowed in the pool
+      minimum-idle: 5 # The minimum number of idle connections to maintain in the pool
+      connection-timeout: 30000 # The maximum milliseconds to wait for a connection from the pool before timing out
+  flyway:
+    enabled: true # Enables Flyway to handle database schema migrations automatically
+    locations: classpath:db/migration # The directory location where SQL migration scripts are stored
+    baseline-on-migrate: true # specific configuration to baseline the database if it already exists but has no history table
+    validate-on-migrate: false # Disables checksum validation of scripts (prevents errors if comments in old SQL files change)
+    out-of-order: true # Allows migration scripts to run even if their version number is lower than the current version
+
+eureka:
+  client:
+    register-with-eureka: false # Prevents this server from registering itself as a client (since it IS the server)
+    fetch-registry: false # Prevents this server from downloading the registry locally (since it HOSTS the registry)
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL:http://${EUREKA_ADMIN_USER:admin}:${EUREKA_ADMIN_PASS:AdminStrong!}@${eureka.instance.hostname}:${server.port}/eureka/} # The base URL that clients will use to connect to this registry
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
+    prefer-ip-address: true # Registers the service using its IP address rather than its hostname (critical for Docker/K8s)
+  server:
+    enable-self-preservation: true # Prevents massive de-registration of instances during network partitions or glitches
+    renewal-percent-threshold: 0.85 # The percentage of expected heartbeats required to maintain self-preservation mode
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,loggers,prometheus # Lists the specific Actuator endpoints exposed over HTTP for monitoring
+
+logging:
+  level:
+    com.netflix.eureka: INFO # Sets the log verbosity for Eureka internals to INFO
+    com.netflix.discovery: INFO # Sets the log verbosity for Discovery client internals to INFO
+    org.springframework.security: INFO # Sets the log verbosity for Security events to INFO
+    org.flywaydb: INFO # Sets the log verbosity for Database migrations to INFO
+
+# User credentials - these MUST be set as environment variables in production or via a secrets manager
+EUREKA_ADMIN_USER: ${EUREKA_ADMIN_USER}
+EUREKA_ADMIN_PASS: ${EUREKA_ADMIN_PASS}
+EUREKA_SERVICE_USER: ${EUREKA_SERVICE_USER}
+EUREKA_SERVICE_PASS: ${EUREKA_SERVICE_PASS}

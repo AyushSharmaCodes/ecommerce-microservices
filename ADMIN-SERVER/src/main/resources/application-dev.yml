@@ -1,0 +1,75 @@
+# Development Profile
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:h2:mem:devdb;DB_CLOSE_DELAY=-1
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  flyway:
+    enabled: false # Disables Flyway database migration tools in the development profile
+  sql:
+    init:
+      mode: always # Forces initialization scripts to run every time the application starts
+      schema-locations: classpath:db/migration/V1__init.sql # Specifies the location of the SQL script to initialize the database schema
+  cloud:
+    vault:
+      enabled: false # Disables HashiCorp Vault integration, relying on local properties instead
+  boot:
+    admin:
+      monitor:
+        status-interval: 5000
+      # Notification configuration
+      notify:
+        mail:
+          enabled: false
+
+eureka:
+  instance:
+    hostname: localhost
+    metadata-map:
+      user.name: admin
+      password: admin123
+    prefer-ip-address: false
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+    shutdown:
+      access: unrestricted
+  info:
+    env:
+      enabled: true
+
+logging:
+  level:
+    root: INFO
+    com.mergaumata: DEBUG
+    de.codecentric.boot.admin: INFO
+    org.springframework.cloud: INFO
+    org.springframework.security:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/admin-server.log
+
+# Provide default dev credentials (safe for local only)
+ADMIN_USER: admin # Default username for admin access (used for Basic Auth on Eureka dashboard)
+ADMIN_PASS: admin123 # Default password for admin access (used for Basic Auth on Eureka dashboard)
+USER_USER: user # Default username for user
+USER_PASS: user123 # Default password for user

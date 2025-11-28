@@ -1,0 +1,79 @@
+openapi: 3.0.3
+info:
+  title: User Service - Internal API
+  version: 1.0.0
+
+paths:
+  /internal/users/username/{username}:
+    get:
+      summary: Get user by username
+      description: Returns user details using the username.
+      tags:
+        - Internal User API
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Username of the user
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+        '404':
+          description: User not found
+
+  /internal/users/{id}:
+    get:
+      summary: Get user by ID
+      description: Returns user details for the given ID.
+      tags:
+        - Internal User API
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: User ID
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+        '404':
+          description: User not found
+
+components:
+  schemas:
+
+    UserDTO:
+      type: object
+      description: User details returned by internal API
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 101
+        username:
+          type: string
+          example: johndoe
+        email:
+          type: string
+          format: email
+          example: johndoe@example.com
+        fullName:
+          type: string
+          example: John Doe
+        roles:
+          type: array
+          items:
+            type: string
+          example: [ "ROLE_USER", "ROLE_ADMIN" ]

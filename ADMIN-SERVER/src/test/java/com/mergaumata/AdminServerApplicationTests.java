@@ -1,10 +1,10 @@
-package com.merigaumata.auth;
+package com.mergaumata;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class HisAuthServiceApplicationTests {
+class AdminServerApplicationTests {
 
 	@Test
 	void contextLoads() {

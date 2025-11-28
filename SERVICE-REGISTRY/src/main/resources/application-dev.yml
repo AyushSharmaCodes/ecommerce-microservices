@@ -1,0 +1,48 @@
+# Development Profile
+server:
+  port: ${SERVER_PORT:8761} # Sets the HTTP port for the server, defaulting to 8761
+
+spring:
+  config:
+    activate:
+      on-profile: dev # Ensures this configuration block only loads when the 'dev' profile is active
+  datasource:
+    url: jdbc:h2:mem:eureka;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE # Configures an in-memory H2 database instance for quick startup
+    driver-class-name: org.h2.Driver # Specifies the driver for the H2 database
+    username: sa # The default username for the H2 database
+    password: # Leaves the password blank for the in-memory H2 database
+  flyway:
+    enabled: false # Disables Flyway database migration tools in the development profile
+  jpa:
+    hibernate:
+      ddl-auto: none # Prevents Hibernate from automatically generating or dropping database schemas
+    show-sql: true # Enables logging of all executed SQL statements to the console
+  sql:
+    init:
+      mode: always # Forces initialization scripts to run every time the application starts
+      schema-locations: classpath:db/migration/V1__init.sql # Specifies the location of the SQL script to initialize the database schema
+  cloud:
+    vault:
+      enabled: false # Disables HashiCorp Vault integration, relying on local properties instead
+
+eureka:
+  server:
+    enable-self-preservation: false # Disables self-preservation mode for development to quickly remove failed instances
+  instance:
+    hostname: localhost # Forces the Eureka server to register with its hostname as 'localhost'
+
+logging:
+  level:
+    com.netflix.eureka: DEBUG # Sets verbose logging for Eureka server internals
+    com.netflix.discovery: DEBUG # Sets verbose logging for Eureka client discovery events
+
+management:
+  endpoint:
+    prometheus:
+      access: unrestricted # Allows unrestricted access to the Prometheus metrics endpoint (for local monitoring)
+
+# Provide default dev credentials (safe for local only)
+EUREKA_ADMIN_USER: admin # Default username for admin access (used for Basic Auth on Eureka dashboard)
+EUREKA_ADMIN_PASS: admin123 # Default password for admin access (used for Basic Auth on Eureka dashboard)
+EUREKA_SERVICE_USER: service # Default username for service-to-service communication
+EUREKA_SERVICE_PASS: service123 # Default password for service-to-service communication

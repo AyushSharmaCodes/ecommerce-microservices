@@ -1,13 +1,13 @@
-package com.merigaumata.eureka;
+package com.merigaumata.auth;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class HisServiceRegistryApplicationTests {
+class AuthServiceApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+    @Test
+    void contextLoads() {
+    }
 
 }

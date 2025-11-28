@@ -1,25 +1,115 @@
-server:
-    port: 8761
-
 spring:
-    application:
-        name: SERVICE-REGISTRY
+  application:
+    name: service-registry # Defines the logical name of this application
+    version: 1.0.0 # Defines the version number of the application
+  profiles:
+    active: dev # Sets the default active profile for the application to 'dev'
+  sql:
+    init:
+      mode: never # Prevents Spring from running schema initialization scripts on startup
 
+# Server Configuration
+server:
+  port: ${SERVER_PORT:8761} # Sets the HTTP port for the application, defaulting to 8761
+  compression:
+    enabled: true # Enables GZIP compression for HTTP responses
+  http2:
+    enabled: true # Enables HTTP/2 protocol support
+  shutdown: graceful # Enables graceful shutdown to finish in-flight requests before stopping
+  servlet:
+    context-path: / # Sets the base context path for all servlets to /eureka
+
+# Eureka Server Configuration
 eureka:
-  client:
-    register-with-eureka: false
-    fetch-registry: false
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-  server:
-    enable-self-preservation: false
-    eviction-interval-timer-in-ms: 10000
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost} # The hostname this instance registers with
+    prefer-ip-address: false # If true, registers the instance's IP instead of its hostname
+    lease-renewal-interval-in-seconds: 10 # Frequency (seconds) the client sends heartbeats to the server
+    lease-expiration-duration-in-seconds: 30 # Time (seconds) the server waits without a heartbeat before evicting
+    metadata-map:
+      zone: ${EUREKA_ZONE:zone1} # Custom metadata map used for zone affinity
 
+  server:
+    # Self-preservation mode (prevents cascade failures)
+    enable-self-preservation: true # Protects the registry from excessive evictions during network issues
+    renewal-percent-threshold: 0.85 # The minimum threshold of expected renewals to disable self-preservation mode
+    # Response cache settings
+    response-cache-update-interval-ms: 30000 # How often (ms) the server updates its cached registry view
+    response-cache-auto-expiration-in-seconds: 180 # Time (seconds) after which cached registry entries expire
+    # Eviction settings
+    eviction-interval-timer-in-ms: 60000 # Frequency (ms) the server runs the eviction task to remove expired instances
+    # Peer node connection settings
+    peer-node-connect-timeout-ms: 2000 # Timeout (ms) for establishing a connection to a peer Eureka server
+    peer-node-read-timeout-ms: 5000 # Timeout (ms) for reading data from a peer Eureka server
+    # Rate limiting
+    rate-limiter-enabled: true # Enables request rate limiting on the Eureka server
+    rate-limiter-burst-size: 10 # Max number of requests allowed in a burst before throttling begins
+    rate-limiter-registry-fetch-average-rate: 500 # Average rate (per sec) for regular client registry fetches
+    rate-limiter-full-fetch-average-rate: 100 # Average rate (per sec) for full registry fetches
+    # Disable delta sync for production stability
+    disable-delta: false # If true, disables sending incremental updates (deltas), forcing full updates
+    # Enable peer awareness
+    enable-replicated-request-compression: true # Enables GZIP compression for traffic between peer Eureka servers
+
+  client:
+    # Register with peer instances for HA
+    register-with-eureka: ${REGISTER_WITH_EUREKA:false} # Controls if this server registers itself as a service
+    fetch-registry: ${FETCH_REGISTRY:false} # Controls if this server fetches and maintains a local copy of the registry
+    # Registry fetch interval
+    registry-fetch-interval-seconds: 30 # How often (seconds) the client polls the server for registry updates
+    # Connection settings
+    eureka-server-connect-timeout-seconds: 10 # Timeout (seconds) for connecting to a Eureka server
+    eureka-server-read-timeout-seconds: 10 # Timeout (seconds) for reading data from a Eureka server
+    # Connection pool settings
+    eureka-server-total-connections: 200 # Maximum total connections allowed in the connection pool
+    eureka-server-total-connections-per-host: 50 # Maximum connections allowed per Eureka server host
+    # Service URL for peers (for HA setup)
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL:http://${EUREKA_SERVICE_USER:service}:${EUREKA_SERVICE_PASS:service123}@${eureka.instance.hostname}:${server.port}/eureka/} # The URL clients use to communicate with the registry
+
+# Actuator Configuration for Monitoring
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health,info,metrics,prometheus,env,loggers # List of Actuator endpoints exposed over HTTP
+      base-path: /actuator # The base path for all exposed Actuator endpoints
   endpoint:
     health:
-      show-details: always
+      show-details: when-authorized # Controls when detailed health info is shown
+      probes:
+        enabled: true # Enables support for Kubernetes liveness and readiness probes
+  info:
+    git:
+      mode: full # Exposes full Git commit details in the /actuator/info endpoint
+  health:
+    livenessstate:
+      enabled: true # Enables the liveness check endpoint (/actuator/health/liveness)
+    readinessstate:
+      enabled: true # Enables the readiness check endpoint (/actuator/health/readiness)
+  metrics:
+    tags:
+      application: ${spring.application.name} # Adds the application name as a tag to all metrics
+      environment: ${ENVIRONMENT:production} # Adds the environment as a tag to all metrics
+  prometheus:
+    metrics:
+      export:
+        enabled: true # Enables the Prometheus format for metrics on the /actuator/prometheus endpoint
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO # Sets the default logging level for all packages to INFO
+    com.netflix.eureka: INFO # Sets the logging level for Eureka server components
+    com.netflix.discovery: INFO # Sets the logging level for Eureka client components
+    com.production.serviceregistry: DEBUG # Sets verbose logging for your specific application package
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n" # Log format for console output
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n" # Log format for file output
+  file:
+    name: logs/service-registry.log # The path and name of the log file
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB # Maximum size of a single log file before it rolls over
+      max-history: 30 # Maximum number of old log files to keep
+      total-size-cap: 1GB # Maximum total size of all log files to retain

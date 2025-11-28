@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: service-registry    # Required for Eureka, logs, metrics
+
+  config:
+    import: configserver:http://localhost:8888   # Connect to Config Server
+    name: service-registry                        # Config file to load from config repo
+
+  boot:
+    admin:
+      client:
+        url: http://localhost:8080                # Spring Boot Admin server

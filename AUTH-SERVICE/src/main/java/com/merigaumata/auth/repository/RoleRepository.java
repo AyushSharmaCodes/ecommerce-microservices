@@ -15,6 +15,7 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 
     /**
      * Find role by name
+     *
      * @param name the role name to search for
      * @return Optional containing the role if found
      */
@@ -22,6 +23,7 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 
     /**
      * Check if a role exists by name
+     *
      * @param name the role name to check
      * @return true if role exists, false otherwise
      */

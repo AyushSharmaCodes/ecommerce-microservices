@@ -1,0 +1,99 @@
+{
+  "@timestamp" : "2025-11-28T11:24:31.310051+05:30",
+  "@version" : "1",
+  "message" : "Starting AdminServerApplication using Java 17.0.14 with PID 37978 (/Users/ayush/Developer/Personal-Projects/ecommerce-backend/ADMIN-SERVER/target/classes started by ayush in /Users/ayush/Developer/Personal-Projects/ecommerce-backend/ADMIN-SERVER)",
+  "logger_name" : "com.mergaumata.adminserver.AdminServerApplication",
+  "thread_name" : "restartedMain",
+  "level" : "INFO",
+  "level_value" : 20000,
+  "service_name" : "admin-server",
+  "environment" : "dev"
+}
+{
+  "@timestamp" : "2025-11-28T11:24:31.317775+05:30",
+  "@version" : "1",
+  "message" : "The following 1 profile is active: \"dev\"",
+  "logger_name" : "com.mergaumata.adminserver.AdminServerApplication",
+  "thread_name" : "restartedMain",
+  "level" : "INFO",
+  "level_value" : 20000,
+  "service_name" : "admin-server",
+  "environment" : "dev"
+}
+{
+  "@timestamp" : "2025-11-28T11:26:42.738408+05:30",
+  "@version" : "1",
+  "message" : "Starting AdminServerApplication using Java 17.0.14 with PID 38485 (/Users/ayush/Developer/Personal-Projects/ecommerce-backend/ADMIN-SERVER/target/classes started by ayush in /Users/ayush/Developer/Personal-Projects/ecommerce-backend/ADMIN-SERVER)",
+  "logger_name" : "com.mergaumata.adminserver.AdminServerApplication",
+  "thread_name" : "restartedMain",
+  "level" : "INFO",
+  "level_value" : 20000,
+  "service_name" : "admin-server",
+  "environment" : "dev"
+}
+{
+  "@timestamp" : "2025-11-28T11:26:42.743258+05:30",
+  "@version" : "1",
+  "message" : "The following 1 profile is active: \"dev\"",
+  "logger_name" : "com.mergaumata.adminserver.AdminServerApplication",
+  "thread_name" : "restartedMain",
+  "level" : "INFO",
+  "level_value" : 20000,
+  "service_name" : "admin-server",
+  "environment" : "dev"
+}
+{
+  "@timestamp" : "2025-11-28T11:26:45.338809+05:30",
+  "@version" : "1",
+  "message" : "Started AdminServerApplication in 3.055 seconds (process running for 3.568)",
+  "logger_name" : "com.mergaumata.adminserver.AdminServerApplication",
+  "thread_name" : "restartedMain",
+  "level" : "INFO",
+  "level_value" : 20000,
+  "service_name" : "admin-server",
+  "environment" : "dev"
+}
+{
+  "@timestamp" : "2025-11-28T11:26:45.47064+05:30",
+  "@version" : "1",
+  "message" : "Created default admin user: admin",
+  "logger_name" : "com.mergaumata.adminserver",
+  "thread_name" : "restartedMain",
+  "level" : "INFO",
+  "level_value" : 20000,
+  "service_name" : "admin-server",
+  "environment" : "dev"
+}
+{
+  "@timestamp" : "2025-11-28T11:26:45.470794+05:30",
+  "@version" : "1",
+  "message" : "adminUser or adminPass already exists, skipping creation.",
+  "logger_name" : "com.mergaumata.adminserver",
+  "thread_name" : "restartedMain",
+  "level" : "INFO",
+  "level_value" : 20000,
+  "service_name" : "admin-server",
+  "environment" : "dev"
+}
+{
+  "@timestamp" : "2025-11-28T11:26:45.566095+05:30",
+  "@version" : "1",
+  "message" : "Created default user: user",
+  "logger_name" : "com.mergaumata.adminserver",
+  "thread_name" : "restartedMain",
+  "level" : "INFO",
+  "level_value" : 20000,
+  "service_name" : "admin-server",
+  "environment" : "dev"
+}
+{
+  "@timestamp" : "2025-11-28T11:26:45.566273+05:30",
+  "@version" : "1",
+  "message" : "user or pass already exists, skipping creation.",
+  "logger_name" : "com.mergaumata.adminserver",
+  "thread_name" : "restartedMain",
+  "level" : "INFO",
+  "level_value" : 20000,
+  "service_name" : "admin-server",
+  "environment" : "dev"
+}
