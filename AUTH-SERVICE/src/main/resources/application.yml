@@ -8,8 +8,8 @@ spring:
 
   datasource:
     url: jdbc:postgresql://pg-200cbd45-ecom-proton.k.aivencloud.com:25379/defaultdb
-    username: avnadmin
-    password: AVNS_-51S2o3mdFuUT_Ro8DY
+    username: ${DB_USER}
+    password: ${DB_PASS}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

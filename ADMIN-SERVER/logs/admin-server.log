@@ -4220,3 +4220,4 @@ Caused by: org.apache.hc.client5.http.HttpHostConnectException: Connect to http:
 2025-11-28 12:14:08 [http-nio-1111-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
 2025-11-28 12:14:08 [http-nio-1111-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms
 2025-11-28 12:19:04 [AsyncResolver-bootstrap-executor-%d] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2025-11-28 12:24:04 [AsyncResolver-bootstrap-executor-%d] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
