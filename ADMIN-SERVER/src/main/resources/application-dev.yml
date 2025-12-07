@@ -36,7 +36,7 @@ eureka:
     metadata-map:
       user.name: admin
       password: admin123
-    prefer-ip-address: false
+    prefer-ip-address: true
 
 # Actuator Configuration
 management:

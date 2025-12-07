@@ -1,15 +1,18 @@
 spring:
   application:
     name: AUTH-SERVICE
-  #  boot:
-  #    admin:
-  #      client:
-  #        url: http://localhost:1111/
+  boot:
+    admin:
+      client:
+        enabled: true
+        url: http://localhost:1111
+        username: admin
+        password: admin123
 
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USER}
-    password: ${DB_PASS}
+    url: jdbc:postgresql://localhost:5433/db_auth
+    username: postgres
+    password: master
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -28,7 +31,7 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://service:service123@localhost:8761/eureka/
   instance:
     hostname: localhost
     lease-renewal-interval-in-seconds: 30
@@ -82,3 +85,6 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui.html
+
+service:
+  secret: ${SERVICE_SECRET:704383aa1300e68fdb449b6ec1aa1f2c}

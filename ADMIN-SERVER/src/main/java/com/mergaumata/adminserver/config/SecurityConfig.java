@@ -35,7 +35,7 @@ public class SecurityConfig {
     SavedRequestAwareAuthenticationSuccessHandler successHandler =
         new SavedRequestAwareAuthenticationSuccessHandler();
     successHandler.setTargetUrlParameter("redirectTo");
-    successHandler.setDefaultTargetUrl(adminServer.path("/"));
+    successHandler.setDefaultTargetUrl(adminServer.path("/admin"));
 
     http.authorizeHttpRequests(
             auth ->

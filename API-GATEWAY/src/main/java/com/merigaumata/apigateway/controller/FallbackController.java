@@ -1,8 +1,10 @@
 package com.merigaumata.apigateway.controller;
 
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Mono;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
@@ -10,23 +12,21 @@ import java.util.Map;
 @RequestMapping("/fallback")
 public class FallbackController {
 
-    @GetMapping(value = "/{service}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Mono<Map<String, Object>> fallback(@PathVariable String service) {
-        Map<String, Object> body = Map.of(
-                "service", service,
-                "status", "unavailable",
-                "message", "The service is currently unavailable. This is a gateway fallback."
-        );
-        return Mono.just(body);
+    @GetMapping("/auth")
+    public ResponseEntity<Map<String, String>> authFallback() {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(Map.of(
+                        "error", "Service Unavailable",
+                        "message", "Authentication service is currently unavailable. Please try again later."
+                ));
     }
 
-    @PostMapping(value = "/{service}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Mono<Map<String, Object>> fallback2(@PathVariable String service) {
-        Map<String, Object> body = Map.of(
-                "service", service,
-                "status", "unavailable",
-                "message", "The service is currently unavailable. This is a gateway fallback."
-        );
-        return Mono.just(body);
+    @GetMapping("/users")
+    public ResponseEntity<Map<String, String>> usersFallback() {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(Map.of(
+                        "error", "Service Unavailable",
+                        "message", "User service is currently unavailable. Please try again later."
+                ));
     }
 }

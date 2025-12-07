@@ -6,13 +6,20 @@ info:
   description: API documentation for Authentication microservice
 
 paths:
-  /login:
+  /auth/login:
     post:
       tags:
         - Authentication
       summary: User Login
-      description: Authenticate the user and generate access and refresh tokens
+      description: Authenticates a user and returns access/refresh tokens. Checks for account locking (brute force protection).
       operationId: login
+      parameters:
+        - in: header
+          name: X-Forwarded-For
+          schema:
+            type: string
+          required: false
+          description: Client IP address for logging and security auditing.
       requestBody:
         required: true
         content:
@@ -21,64 +28,169 @@ paths:
               $ref: '#/components/schemas/LoginRequest'
       responses:
         '200':
-          description: Successful login
+          description: Successful authentication
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/LoginResponse'
-        '400':
-          description: Invalid Credentials
-        '500':
-          description: Internal server error
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Account locked due to too many failed attempts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
-  /refresh:
-    get:
+  /auth/register:
+    post:
       tags:
         - Authentication
-      summary: Refresh access Token
-      description: Accepts a refresh token and returns a new access token
+      summary: Register New User
+      description: Registers a new user and validates password policy.
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          description: Registration failed (Validation or User exists)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh Access Token
+      description: Issues a new access token using a valid refresh token.
       operationId: refresh
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RefreshTokenRequest'
+              $ref: '#/components/schemas/RefreshRequest'
       responses:
         '200':
-          description: Token refreshed
+          description: Token refreshed successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/LoginResponse'
         '401':
           description: Invalid or expired refresh token
-        '500':
-          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /auth/logout:
     post:
       tags:
         - Authentication
-      summary: User Logout
-      description: Invalidate the provided access and refresh tokens
-      operationId: logout
+      summary: Logout
+      description: Blacklists the access token and revokes the refresh token. Requires Bearer Authorization header.
       parameters:
+        # Define the Authorization header as a required parameter
         - in: header
           name: Authorization
+          description: Bearer token (Access Token) to be revoked.
           required: true
           schema:
             type: string
-            example: Bearer {token}
-          description: Access token in the format 'Bearer {token}'
+            example: Bearer eyJhbGciOiJIUzI1Ni...
+      operationId: logout
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogoutRequest'
       responses:
         '200':
           description: Logged out successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
         '400':
-          description: Invalid or missing token
-        '500':
-          description: Internal server error
+          description: Logout failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/introspect:
+    post:
+      tags:
+        - Authentication
+      summary: Introspect Token
+      description: Validates a token and returns its metadata (claims, active status).
+      operationId: introspect
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenIntrospectionRequest'
+      responses:
+        '200':
+          description: Introspection result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenIntrospectionResponse'
+
+  /auth/.well-known/jwks.json:
+    get:
+      tags:
+        - Discovery
+      summary: Get JWKS
+      description: Returns the JSON Web Key Set (public keys) for signature verification.
+      operationId: getJwks
+      responses:
+        '200':
+          description: JWKS returned successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                description: JWKS JSON object
+                additionalProperties: true
+              example:
+                keys:
+                  - kty: RSA
+                    kid: "12345"
+                    use: sig
+                    alg: RS256
+                    n: "base64url-modulus"
+                    e: "AQAB"
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     LoginRequest:
       type: object
@@ -88,10 +200,62 @@ components:
       properties:
         username:
           type: string
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
           example: john_doe
         password:
           type: string
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
           example: securePassword123
+    RegisterRequest:
+      type: object
+      required:
+        - username
+        - password
+        - email
+      properties:
+        username:
+          type: string
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+          minimum: 3
+          maximum: 50
+          example: john_doe
+        password:
+          type: string
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+          minimum: 12
+          example: securePassword123
+        email:
+          type: string
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+          format: email
+          example: user@example.com
+    RefreshRequest:
+      type: object
+      required:
+        - refreshToken
+      properties:
+        refreshToken:
+          type: string
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+          example: dGhpcy1pcz1hLXJlZnJlc2gtdG9rZW4uLi4=
+    LogoutRequest:
+      type: object
+      required:
+        - refreshToken
+      properties:
+        refreshToken:
+          type: string
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+          example: dGhpcy1pcz1hLXJlZnJlc2gtdG9rZW4uLi4=
+    TokenIntrospectionRequest:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
     LoginResponse:
       type: object
       properties:
@@ -106,13 +270,130 @@ components:
           example: Bearer
         expiresIn:
           type: integer
+          format: int64
           example: 3600
           description: Access token expiration time in seconds
-    RefreshTokenRequest:
-      type: object
-      required:
-        - refreshToken
-      properties:
-        refreshToken:
+        userId:
           type: string
-          example: dGhpcy1pcz1hLXJlZnJlc2gtdG9rZW4uLi4=
+          example: 123e4567-e89b-12d3-a456-426614174000
+        roles:
+          type: array
+          items:
+            type: string
+          example: [ "USER", "ADMIN" ]
+        scopes:
+          type: array
+          items:
+            type: string
+          example: [ "read", "write" ]
+    TokenIntrospectionResponse:
+      type: object
+      properties:
+        active:
+          type: boolean
+          example: true
+        subject:
+          type: string
+          example: john_doe
+        issuer:
+          type: string
+          example:
+        expiration:
+          type: integer
+          format: int64
+          example: 1700000000
+          description: Expiration time as a Unix timestamp
+        roles:
+          type: array
+          items:
+            type: string
+          example: [ "USER", "ADMIN" ]
+        scopes:
+          type: array
+          items:
+            type: string
+          example: [ "read", "write" ]
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operation completed successfully
+    ErrorResponse:
+      type: object
+      description: Standard error response
+      # @JsonInclude(JsonInclude.Include.NON_NULL) implies properties might be omitted if null,
+      # so we do not list all fields under 'required' by default.
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp when the error occurred
+          # @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") suggests a specific format
+          example: 2024-01-15T10:30:00
+
+        status:
+          type: integer
+          format: int32
+          description: HTTP status code
+          example: 400
+
+        errorCode:
+          type: string
+          description: Error code for client-side handling
+          example: VALIDATION_ERROR
+
+        message:
+          type: string
+          description: Human-readable error message
+          example: Validation failed
+
+        details:
+          type: string
+          description: Detailed error description
+
+        path:
+          type: string
+          description: Request path that caused the error
+          example: /api/users
+
+        fieldErrors:
+          type: array
+          description: Validation errors (field-level)
+          items:
+            $ref: '#/components/schemas/FieldError'
+
+        metadata:
+          type: object
+          description: Additional error metadata
+          # Use additionalProperties to allow arbitrary key/value pairs
+          additionalProperties: { }
+
+        correlationId:
+          type: string
+          description: Correlation ID for tracing
+          example: 550e8400-e29b-41d4-a716-446655440000
+    FieldError:
+      type: object
+      description: Field-level validation error
+      properties:
+        field:
+          type: string
+          description: Field name
+          example: email
+
+        rejectedValue:
+          # Use 'object' to match Java's 'Object' type for flexibility
+          type: object
+          description: Rejected value
+          example: invalid-email
+
+        message:
+          type: string
+          description: Error message
+          example: must be a well-formed email address
+
+        constraint:
+          type: string
+          description: Validation constraint
+          example: Email

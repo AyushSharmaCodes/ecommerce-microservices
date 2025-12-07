@@ -1,0 +1,32 @@
+openapi: 3.0.3
+
+info:
+  title: Auth Service
+  version: 1.0.0
+  description: API documentation for Authentication microservice
+
+paths:
+  /auth/.well-known/jwks.json:
+    get:
+      tags:
+        - Discovery
+      summary: Get JWKS
+      description: Returns the JSON Web Key Set (public keys) for signature verification.
+      operationId: getJwks
+      responses:
+        '200':
+          description: JWKS returned successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                description: JWKS JSON object
+                additionalProperties: true
+              example:
+                keys:
+                  - kty: RSA
+                    kid: "12345"
+                    use: sig
+                    alg: RS256
+                    n: "base64url-modulus"
+                    e: "AQAB"
